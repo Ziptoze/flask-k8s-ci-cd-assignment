@@ -14,7 +14,7 @@ pipeline {
             steps {
                 script {
                     echo "🔨 Building Docker image..."
-                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                    bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% .'
                 }
             }
         }
@@ -23,8 +23,8 @@ pipeline {
             steps {
                 script {
                     echo "🚀 Deploying to Kubernetes..."
-                    sh 'kubectl apply -f ${DEPLOYMENT_FILE}'
-                    sh 'kubectl apply -f ${SERVICE_FILE}'
+                    bat 'kubectl apply -f %DEPLOYMENT_FILE%'
+                    bat 'kubectl apply -f %SERVICE_FILE%'
                 }
             }
         }
@@ -33,10 +33,10 @@ pipeline {
             steps {
                 script {
                     echo "🔍 Checking rollout status..."
-                    sh 'kubectl rollout status deployment/flask-app-deployment'
+                    bat 'kubectl rollout status deployment/flask-app-deployment'
                     echo "📦 Checking running pods and services..."
-                    sh 'kubectl get pods'
-                    sh 'kubectl get services'
+                    bat 'kubectl get pods'
+                    bat 'kubectl get services'
                 }
             }
         }
