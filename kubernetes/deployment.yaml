@@ -1,19 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask-deployment
+  name: flask-app-deployment
+  labels:
+    app: flask-app
 spec:
-  replicas: 1
+  replicas: 3   # multiple replicas for scaling
   selector:
     matchLabels:
       app: flask-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   template:
     metadata:
       labels:
         app: flask-app
     spec:
       containers:
-      - name: flask-container
-        image: flask-app:latest
+      - name: flask-app
+        image: flask-k8s-app:latest
+        imagePullPolicy: Never  # tells Kubernetes to use local image from minikube
         ports:
         - containerPort: 5000
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
