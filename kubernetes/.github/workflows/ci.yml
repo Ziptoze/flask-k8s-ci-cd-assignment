@@ -36,5 +36,5 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          echo "🐳 Building Docker image..."
+          echo "🐳 Building Docker image.."
           docker build -t flask-app .
