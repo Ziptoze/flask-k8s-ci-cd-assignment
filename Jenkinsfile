@@ -1,21 +1,53 @@
 pipeline {
     agent any
+
+    environment {
+        IMAGE_NAME = "flask-k8s-app"
+        IMAGE_TAG = "latest"
+        DEPLOYMENT_FILE = "kubernetes/deployment.yaml"
+        SERVICE_FILE = "kubernetes/service.yaml"
+    }
+
     stages {
-        stage('Build') {
+
+        stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image...'
-                sh 'docker build -t flask-app .'
+                script {
+                    echo "🔨 Building Docker image..."
+                    bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% .'
+                }
             }
         }
-        stage('Test') {
+
+        stage('Deploy to Kubernetes') {
             steps {
-                echo 'Running basic tests...'
+                script {
+                    echo "🚀 Deploying to Kubernetes..."
+                    bat 'kubectl apply -f %DEPLOYMENT_FILE%'
+                    bat 'kubectl apply -f %SERVICE_FILE%'
+                }
             }
         }
-        stage('Deploy') {
+
+        stage('Verify Deployment') {
             steps {
-                echo 'Deployment stage (to be implemented in Task 4)'
+                script {
+                    echo "🔍 Checking rollout status..."
+                    bat 'kubectl rollout status deployment/flask-app-deployment'
+                    echo "📦 Checking running pods and services..."
+                    bat 'kubectl get pods'
+                    bat 'kubectl get services'
+                }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Pipeline completed successfully!"
+        }
+        failure {
+            echo "❌ Pipeline failed. Please check logs."
         }
     }
 }
